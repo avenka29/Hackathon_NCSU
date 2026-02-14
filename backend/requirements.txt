@@ -1,0 +1,8 @@
+uvicorn==0.40.0
+fastapi==0.129.0
+twilio==9.0.4
+elevenlabs==1.9.0
+valkey==6.0.2
+python-dotenv==1.0.0
+pydantic-settings==2.1.0
+requests==2.31.0
