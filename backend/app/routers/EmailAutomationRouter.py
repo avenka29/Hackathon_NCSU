@@ -3,6 +3,7 @@ import uvicorn
 import logging
 import csv
 import sys
+import uuid
 from datetime import datetime
 from typing import Dict, Any, Optional
 from dotenv import load_dotenv
@@ -76,8 +77,8 @@ async def postmark_webhook(request: Request, x_postmark_secret: str = Header(Non
         log_event(uid, "EMAIL_CLICK")
     return {"status": "ok"}
 
+# Create a ngrok account with auth token to set the base_url correctly
 # --- CAMPAIGN TOOL (The Sender) ---
-
 def run_campaign():
     """Trigger the phishing email send."""
     # Update this to your NGROK URL for live testing
@@ -95,6 +96,23 @@ def run_campaign():
     )
     print("✅ Email Sent successfully.")
 
+def run_batch_campaign():
+    target_emails = []
+    email_msg = []
+    base_url = "https://jayda-nondefunct-teasingly.ngrok-free.dev"
+    for email in target_emails:
+        new_uid = str(uuid.uuid4())
+        email_msg.append({
+            "From" : "pkengso@ncsu.edu",
+            "To" : email,
+            "Subject" : "Security Sync: Action Required",
+            "HtmlBody": f'Please click here to verify: {base_url}/verify?uid={new_uid}',
+            "Metadata": {"user_uid": new_uid}, # Vital for Webhook tracking
+            "TrackLinks": "HtmlAndText" 
+        })
+        print(f"Generated link for {email}: .../verify?uid={new_uid}")
+    postmark.emails.send_batch(*email_msg)
+    print(f"✅ Batch of {len(target_emails)} sent with unique tracking IDs.")
 # --- EXECUTION ---
 
 if __name__ == "__main__":
