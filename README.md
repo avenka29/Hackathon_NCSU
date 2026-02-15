@@ -1,11 +1,10 @@
-SecureMe 
-
+SecureMe - Phishing Training Platform
 A comprehensive cybersecurity awareness training platform that simulates phishing attacks through email campaigns and phone calls to educate employees about social engineering tactics.
-Features
+🌟 Features
 Email Phishing Simulation
 
 Batch Email Campaigns: Send realistic phishing emails to multiple recipients
-Red Hat SSO Landing Page: Professional, authentic-looking login page
+Landing Page: Professional, authentic-looking login page
 Credential Capture: Track who falls for phishing attempts
 Real-time Analytics: Monitor email opens, clicks, and submissions
 CSV Logging: Comprehensive event tracking for reporting
@@ -44,7 +43,7 @@ python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
-pip install fastapi uvicorn python-dotenv postmarker twilio pydantic
+pip install r requirements.txt
 
 # Create .env file
 cat > .env << EOL
@@ -52,8 +51,8 @@ POSTMARK_API_KEY=your_postmark_api_key
 TWILIO_ACCOUNT_SID=your_twilio_sid
 TWILIO_AUTH_TOKEN=your_twilio_token
 BASE_URL=https://your-ngrok-url.ngrok-free.dev
-WEBHOOK_SECRET=ncsu_secure_2026
-EOL
+
+
 3. Frontend Setup:
 bashcd ../frontend
 
@@ -94,7 +93,7 @@ Hackathon_NCSU/
 │   │   └── App.tsx
 │   └── package.json
 └── README.md
-Configuration
+🔧 Configuration
 Environment Variables
 Create a .env file in the backend directory:
 env# Postmark (Email Service)
@@ -107,7 +106,6 @@ TWILIO_PHONE_NUMBER=+1234567890
 
 # Application
 BASE_URL=https://your-ngrok-url.ngrok-free.dev
-WEBHOOK_SECRET=your_secure_webhook_secret
 
 # Optional
 PORT=8000
@@ -116,10 +114,6 @@ Postmark Setup
 Sign up at Postmark
 Verify your sender email address
 Get your Server API Token
-Configure webhook at: {BASE_URL}/webhooks/postmark
-
-Add header: X-Postmark-Secret: {WEBHOOK_SECRET}
-
 
 
 Twilio Setup
@@ -128,13 +122,6 @@ Sign up at Twilio
 Get a phone number with voice capabilities
 Configure webhook: {BASE_URL}/api/calls/webhook
 
-📡 API Endpoints
-Email Campaign Endpoints
-MethodEndpointDescriptionPOST/campaign/batchSend batch phishing emailsGET/verify?uid={uid}Serve phishing landing pagePOST/submit-credentialsCapture submitted credentialsPOST/webhooks/postmarkReceive email tracking events
-Phone Call Endpoints
-MethodEndpointDescriptionPOST/api/calls/initiateStart a phishing callPOST/api/calls/webhookHandle Twilio callbacksGET/api/calls/{call_id}Get call details
-Scenario Management
-MethodEndpointDescriptionGET/api/scenariosList all scenariosGET/api/scenarios/{id}Get scenario detailsPOST/api/scenariosCreate new scenario
 🎯 Usage
 Running an Email Campaign
 
