@@ -1,4 +1,5 @@
-SecureMe
+**SecureMe** 
+
 A comprehensive cybersecurity awareness training platform that simulates phishing attacks through email campaigns and phone calls to educate employees about social engineering tactics.
 
 Features
