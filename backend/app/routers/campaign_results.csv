@@ -25,3 +25,7 @@ Timestamp,User_ID,Event,Details
 2026-02-14 23:21:18,batch_1_1771129191,LANDING_PAGE_LOADED,
 2026-02-14 23:25:43,batch_1_1771129542,EMAIL_SENT,Batch: Alice Chen (Engineering)
 2026-02-14 23:26:27,batch_1_1771129542,LANDING_PAGE_LOADED,
+2026-02-15 00:45:07,batch_1_1771134306,EMAIL_SENT,Batch: Alice Chen (Engineering)
+2026-02-15 01:00:22,batch_1_1771135221,EMAIL_SENT,Batch: Alice Chen (Engineering)
+2026-02-15 01:00:22,batch_2_1771135222,EMAIL_SENT,Batch: Bob Smith (Marketing)
+2026-02-15 01:00:27,batch_1_1771135227,EMAIL_SENT,Batch: Alice Chen (Engineering)
