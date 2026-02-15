@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
 
-from app.routers import twilio_router, scenarios_router
+from app.routers import twilio_router, scenarios_router, generateEmail, EmailAutomationRouter
 from app.config import get_settings
 
 settings = get_settings()
@@ -38,6 +38,8 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 # Include routers
 app.include_router(twilio_router.router)
 app.include_router(scenarios_router.router)
+app.include_router(generateEmail.router)
+app.include_router(EmailAutomationRouter.router)
 
 
 @app.get("/")
