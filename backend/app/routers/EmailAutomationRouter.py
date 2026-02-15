@@ -60,7 +60,8 @@ async def postmark_webhook(request: Request, x_postmark_secret: str = Header(Non
 
 # --- CAMPAIGN TOOL ---
 
-def run_campaign():
+@app.post("/send-email")
+async def run_campaign():
     """Trigger the phishing email send."""
     # Update this to your public NGROK URL before running!
     base_url = "https://jayda-nondefunct-teasingly.ngrok-free.dev" 

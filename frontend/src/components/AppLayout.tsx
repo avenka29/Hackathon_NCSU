@@ -28,7 +28,7 @@ export default function AppLayout() {
                   People
                 </NavLink>
                 <NavLink
-                  to="/metrics"
+                  to="/audit"
                   className={({ isActive }) =>
                     `px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       isActive
@@ -37,7 +37,7 @@ export default function AppLayout() {
                     }`
                   }
                 >
-                  Metrics
+                  Audit
                 </NavLink>
               </div>
             </div>

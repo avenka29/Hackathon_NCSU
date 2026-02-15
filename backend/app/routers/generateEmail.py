@@ -32,7 +32,7 @@ class GenerateRequest(BaseModel):
 @router.post("/generate-email")
 async def generate_email(req: GenerateRequest):
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-pro")
         system = (
             "You are a phishing awareness training assistant. Generate realistic phishing email "
             "content for employee training only. Respond with valid JSON only, no markdown: "

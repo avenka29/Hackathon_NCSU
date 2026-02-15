@@ -6,8 +6,6 @@ const MOCK_PEOPLE = [
   { id: '1', name: 'Alice Chen', role: 'Engineering' },
   { id: '2', name: 'Bob Smith', role: 'Marketing' },
   { id: '3', name: 'Carol Davis', role: 'HR' },
-  { id: '4', name: 'David Lee', role: 'Engineering' },
-  { id: '5', name: 'Eve Wilson', role: 'Finance' },
 ];
 
 const roleBadgeColors: Record<string, string> = {

@@ -4,7 +4,7 @@ import AppLayout from './components/AppLayout';
 import PeoplePage from './pages/PeoplePage';
 import PersonCallPage from './pages/PersonCallPage';
 import BatchPage from './pages/BatchPage';
-import MetricsPage from './pages/MetricsPage';
+import AuditPage from './pages/AuditPage';
 
 function App() {
   return (
@@ -15,7 +15,8 @@ function App() {
           <Route path="/people" element={<PeoplePage />} />
           <Route path="/people/batch" element={<BatchPage />} />
           <Route path="/people/:personId" element={<PersonCallPage />} />
-          <Route path="/metrics" element={<MetricsPage />} />
+          <Route path="/audit" element={<AuditPage />} />
+          <Route path="/metrics" element={<Navigate to="/audit" replace />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

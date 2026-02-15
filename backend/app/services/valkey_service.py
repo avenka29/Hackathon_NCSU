@@ -111,6 +111,27 @@ class ValkeyService:
         entries_raw = self.client.lrange(f"transcript:{call_sid}", 0, -1)
         return [json.loads(entry) for entry in entries_raw]
 
+    def list_calls(self) -> List[Dict[str, Any]]:
+        """List all call sessions (for audit). Returns session summary for each call."""
+        keys = self.client.keys("call:*")
+        calls = []
+        for key in keys or []:
+            call_sid = key.replace("call:", "", 1) if key.startswith("call:") else key
+            data = self.client.hgetall(key)
+            if data:
+                if "current_turn" in data:
+                    data["current_turn"] = int(data["current_turn"])
+                data["call_sid"] = call_sid
+                calls.append(data)
+        # Sort by started_at descending (newest first)
+        calls.sort(key=lambda c: c.get("started_at") or "", reverse=True)
+        return calls
+    
+    def list_calls_by_phone(self, phone_number: str) -> List[Dict[str, Any]]:
+        """List call sessions for a given phone number (for person audit)."""
+        all_calls = self.list_calls()
+        return [c for c in all_calls if (c.get("phone_number") or "").strip() == (phone_number or "").strip()]
+
 
 # Singleton instance
 _valkey_service: Optional[ValkeyService] = None
