@@ -1,18 +1,18 @@
-<h1>SecureMe</h1>
+SecureMe 
 
 A comprehensive cybersecurity awareness training platform that simulates phishing attacks through email campaigns and phone calls to educate employees about social engineering tactics.
-
 Features
+Email Phishing Simulation
 
 Batch Email Campaigns: Send realistic phishing emails to multiple recipients
-SSO Landing Page: Professional, authentic-looking login page
+Red Hat SSO Landing Page: Professional, authentic-looking login page
 Credential Capture: Track who falls for phishing attempts
 Real-time Analytics: Monitor email opens, clicks, and submissions
 CSV Logging: Comprehensive event tracking for reporting
 
 Phone Call Simulation
 
-AI-Powered Voice Calls: Realistic phishing scenarios via Twilio and ElevenLabs
+AI-Powered Voice Calls: Realistic phishing scenarios via Twilio
 Multiple Scenarios: Pre-built social engineering scripts
 Interactive Responses: Track user reactions during calls
 Audio Recording: Review calls for training purposes
@@ -28,26 +28,23 @@ Prerequisites
 
 Python 3.8+
 Node.js 18+
-Postmark Account (for email automation)
+Postmark Account (for emails)
 Twilio Account (for phone calls)
 ngrok (for public URL tunneling)
-ElevenLabs (for voice AI)
-Valkey (for database storage)
-Google Gemini API (for transcript analysis) 
 
 Installation
 1. Clone the repository:
-bash git clone <your-repo-url>
+bashgit clone <your-repo-url>
 cd Hackathon_NCSU
 2. Backend Setup:
-bash cd backend 
+bashcd backend
 
 # Create virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install fastapi uvicorn python-dotenv postmarker twilio pydantic
 
 # Create .env file
 cat > .env << EOL
@@ -55,9 +52,10 @@ POSTMARK_API_KEY=your_postmark_api_key
 TWILIO_ACCOUNT_SID=your_twilio_sid
 TWILIO_AUTH_TOKEN=your_twilio_token
 BASE_URL=https://your-ngrok-url.ngrok-free.dev
+WEBHOOK_SECRET=ncsu_secure_2026
 EOL
 3. Frontend Setup:
-bash cd ../frontend
+bashcd ../frontend
 
 # Install dependencies
 npm install
@@ -65,10 +63,10 @@ npm install
 # Start development server
 npm run dev
 4. Start ngrok (for public URL):
-bash ngrok http 8000
+bashngrok http 8000
 Copy the ngrok URL and update BASE_URL in your .env file.
 5. Start the backend:
-bash cd backend
+bashcd backend
 python main.py
 ```
 
@@ -96,7 +94,7 @@ Hackathon_NCSU/
 │   │   └── App.tsx
 │   └── package.json
 └── README.md
-🔧 Configuration
+Configuration
 Environment Variables
 Create a .env file in the backend directory:
 env# Postmark (Email Service)
@@ -109,6 +107,7 @@ TWILIO_PHONE_NUMBER=+1234567890
 
 # Application
 BASE_URL=https://your-ngrok-url.ngrok-free.dev
+WEBHOOK_SECRET=your_secure_webhook_secret
 
 # Optional
 PORT=8000
@@ -121,12 +120,21 @@ Configure webhook at: {BASE_URL}/webhooks/postmark
 
 Add header: X-Postmark-Secret: {WEBHOOK_SECRET}
 
+
+
 Twilio Setup
 
 Sign up at Twilio
 Get a phone number with voice capabilities
 Configure webhook: {BASE_URL}/api/calls/webhook
 
+📡 API Endpoints
+Email Campaign Endpoints
+MethodEndpointDescriptionPOST/campaign/batchSend batch phishing emailsGET/verify?uid={uid}Serve phishing landing pagePOST/submit-credentialsCapture submitted credentialsPOST/webhooks/postmarkReceive email tracking events
+Phone Call Endpoints
+MethodEndpointDescriptionPOST/api/calls/initiateStart a phishing callPOST/api/calls/webhookHandle Twilio callbacksGET/api/calls/{call_id}Get call details
+Scenario Management
+MethodEndpointDescriptionGET/api/scenariosList all scenariosGET/api/scenarios/{id}Get scenario detailsPOST/api/scenariosCreate new scenario
 🎯 Usage
 Running an Email Campaign
 
@@ -155,6 +163,8 @@ Monitor results:
 
 Check campaign_results.csv for events
 Track: EMAIL_SENT → EMAIL_CLICK → LANDING_PAGE_LOADED → COMPROMISED
+
+
 
 Running a Phone Campaign
 
@@ -217,6 +227,14 @@ Phone calls not working
 Verify Twilio credentials
 Check phone number has voice capabilities
 Ensure webhook URL is publicly accessible
+
+🤝 Contributing
+
+Fork the repository
+Create a feature branch (git checkout -b feature/AmazingFeature)
+Commit changes (git commit -m 'Add AmazingFeature')
+Push to branch (git push origin feature/AmazingFeature)
+Open a Pull Request
 
 📝 License
 This project is for educational purposes only. Use responsibly and ethically.
