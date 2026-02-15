@@ -24,7 +24,7 @@ export default function BatchPage() {
         description
       });
 
-      const response = await fetch("http://localhost:8000/campaign/batch", {
+      const response = await fetch("http://localhost:8000/api/email/campaign/batch", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
