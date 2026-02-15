@@ -61,6 +61,8 @@ export default function MetricsPage() {
         ))}
       </div>
 
+      
+
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8">
         <div className="text-center py-12">
           <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">

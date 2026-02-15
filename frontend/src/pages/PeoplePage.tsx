@@ -3,11 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Phone, Users, CheckSquare, X, Search } from 'lucide-react';
 
 const MOCK_PEOPLE = [
-  { id: '1', name: 'Alice Chen', role: 'Engineering', email: 'fhbhatti@ncsu.edu'},
+  { id: '1', name: 'Alice Chen', role: 'Engineering', email: 'fhbhatti@ncsu.edu' },
   { id: '2', name: 'Bob Smith', role: 'Marketing', email: 'fhbhatti@ncsu.edu' },
   { id: '3', name: 'Carol Davis', role: 'HR', email: 'fhbhatti@ncsu.edu' },
-  { id: '4', name: 'David Lee', role: 'Engineering', email: 'fhbhatti@ncsu.edu' },
-  { id: '5', name: 'Eve Wilson', role: 'Finance', email: 'fhbhatti@ncsu.edu' },
 ];
 
 const roleBadgeColors: Record<string, string> = {

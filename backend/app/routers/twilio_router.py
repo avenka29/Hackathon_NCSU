@@ -103,9 +103,14 @@ async def webhook_call_start(request: Request):
     if not session:
         # Race condition: webhook fired before session was created.
         # Look up scenario by phone number from the pending call key.
+        # Try multiple formats (Twilio may send To with/without +).
         scenario_id = None
         if called_number:
-            scenario_id = valkey.client.get(f"pending_call:{called_number}")
+            scenario_id = (
+                valkey.client.get(f"pending_call:{called_number}")
+                or valkey.client.get(f"pending_call:+{called_number.lstrip('+')}")
+                or valkey.client.get(f"pending_call:{called_number.lstrip('+')}")
+            )
         if scenario_id:
             # Create the session now
             valkey.create_call_session(
@@ -188,10 +193,26 @@ async def webhook_gather_speech(request: Request):
     form_data = await request.form()
     call_sid = form_data.get("CallSid")
     speech_result = form_data.get("SpeechResult", "")
+    called_number = form_data.get("To")
 
     valkey = get_valkey_service()
     detector = get_detection_service()
     session = valkey.get_call_session(call_sid)
+
+    # If session missing (e.g. race or restart), try to restore from pending_call
+    if not session and called_number:
+        scenario_id = (
+            valkey.client.get(f"pending_call:{called_number}")
+            or valkey.client.get(f"pending_call:+{called_number.lstrip('+')}")
+            or valkey.client.get(f"pending_call:{called_number.lstrip('+')}")
+        )
+        if scenario_id:
+            valkey.create_call_session(
+                call_sid=call_sid,
+                phone_number=called_number,
+                scenario_id=scenario_id
+            )
+            session = valkey.get_call_session(call_sid)
 
     if not session:
         response = VoiceResponse()
@@ -350,6 +371,44 @@ async def webhook_status_update(request: Request):
     return {"status": "ok"}
 
 
+@router.get("/audit/list")
+async def list_calls_audit(phone_number: str = None):
+    """
+    List all calls for the audit page, or filter by phone_number for a person.
+    Returns session summary for each call.
+    """
+    valkey = get_valkey_service()
+    if phone_number:
+        calls = valkey.list_calls_by_phone(phone_number)
+    else:
+        calls = valkey.list_calls()
+    return {"calls": calls}
+
+
+@router.get("/audit/{call_sid}")
+async def get_call_audit(call_sid: str):
+    """
+    Get full audit data for one call: session, transcript, events, and derived vulnerabilities.
+    """
+    valkey = get_valkey_service()
+    session = valkey.get_call_session(call_sid)
+    if not session:
+        raise HTTPException(status_code=404, detail="Call not found")
+    transcript = valkey.get_transcript(call_sid)
+    events = valkey.get_events(call_sid)
+    vulnerabilities = [
+        e for e in events
+        if e.get("event_type") == EventType.SENSITIVE_DATA_DETECTED.value
+    ]
+    return {
+        "call_sid": call_sid,
+        "session": session,
+        "transcript": transcript,
+        "events": events,
+        "vulnerabilities": vulnerabilities,
+    }
+
+
 @router.get("/{call_sid}/status")
 async def get_call_status(call_sid: str):
     """
@@ -384,3 +443,49 @@ async def get_call_transcript(call_sid: str):
     transcript = valkey.get_transcript(call_sid)
 
     return {"call_sid": call_sid, "transcript": transcript}
+
+
+@router.get("/{call_sid}/feedback")
+async def get_call_feedback(call_sid: str):
+    """
+    Get AI-generated feedback for a call: what the user did wrong and suggestions to improve.
+    Uses the call transcript and Gemini.
+    """
+    import google.generativeai as genai
+    valkey = get_valkey_service()
+    if not settings.gemini_api_key:
+        raise HTTPException(
+            status_code=503,
+            detail="Gemini API key not configured. Add gemini_api_key to .env for feedback."
+        )
+    transcript_list = valkey.get_transcript(call_sid)
+    if not transcript_list:
+        raise HTTPException(
+            status_code=404,
+            detail="No transcript found for this call. The call may still be in progress or transcript expired."
+        )
+    # Build a single transcript string for the prompt
+    lines = []
+    for entry in sorted(transcript_list, key=lambda e: (e.get("turn", 0), e.get("timestamp", ""))):
+        speaker = entry.get("speaker", "unknown")
+        text = entry.get("text", "").strip()
+        if text and text != "[User response expected]":
+            lines.append(f"{speaker.capitalize()}: {text}")
+    transcript_text = "\n".join(lines) if lines else "No conversation captured."
+    genai.configure(api_key=settings.gemini_api_key)
+    model = genai.GenerativeModel("gemini-2.5-flash")
+    prompt = (
+        "You are a security coach. Below is the transcript of a phishing simulation phone call. "
+        "The 'scammer' is the simulated attacker; the 'user' is the person being trained.\n\n"
+        "Transcript:\n" + transcript_text + "\n\n"
+        "Write one short paragraph that: (1) summarizes what the user did wrong or where they were at risk, "
+        "and (2) gives 2–3 brief, actionable suggestions to improve (e.g. don't read verification codes over the phone, "
+        "don't confirm account numbers to callers, hang up and call the number on the back of the card). "
+        "Keep the tone constructive and educational. Output only the paragraph, no headings or bullet lists."
+    )
+    try:
+        response = model.generate_content(prompt)
+        feedback = response.text.strip() if response.text else "Unable to generate feedback."
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate feedback: {str(e)}")
+    return {"call_sid": call_sid, "feedback": feedback}

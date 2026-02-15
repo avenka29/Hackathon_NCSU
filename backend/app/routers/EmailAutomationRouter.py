@@ -173,9 +173,12 @@ async def postmark_webhook(request: Request, x_postmark_secret: str = Header(Non
 
 # --- ENDPOINTS: Batch Campaign ---
 
-@app.post("/campaign/batch")
-async def send_batch_campaign(request: BatchRequest):
-    """Sends batch phishing emails that link to your LandingPage.html"""
+@app.post("/send-email")
+async def run_campaign():
+    """Trigger the phishing email send."""
+    # Update this to your public NGROK URL before running!
+    base_url = "https://jayda-nondefunct-teasingly.ngrok-free.dev" 
+    user = {"email": "fhbhatti@ncsu.edu", "uid": "student_01"}
     
     logger.info(f"📧 Starting batch campaign with {len(request.recipients)} recipients")
     logger.info(f"📝 Description: {request.description}")

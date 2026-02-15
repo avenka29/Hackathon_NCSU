@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     valkey_port: int = 6379
     valkey_db: int = 0
 
+    postmark_api_key: str = ""
+
+    # Gemini (for call feedback)
+    gemini_api_key: str = ""
+
     # Application
     base_url: str = "http://localhost:8000"
 
