@@ -1,4 +1,4 @@
-<h4>**SecureMe**</h4>
+<h1>SecureMe</h1>
 
 A comprehensive cybersecurity awareness training platform that simulates phishing attacks through email campaigns and phone calls to educate employees about social engineering tactics.
 
